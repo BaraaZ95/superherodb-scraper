@@ -19,24 +19,24 @@ NEWSPIDER_MODULE = 'superheroes_test.spiders'
 # }
 
 # Crawl responsibly by identifying yourself (and your website) on the user-agent
-DOWNLOADER_MIDDLEWARES = {
-     'scrapy.downloadermiddlewares.useragent.UserAgentMiddleware': None,
-    # -1 Retry means low priority middleware and retry after scraper is done
-    # 'scrapy.downloadermiddlewares.retry.RetryMiddleware': -1,
-     'scrapy_fake_useragent.middleware.RandomUserAgentMiddleware': 400,
-     'scrapy_fake_useragent.middleware.RetryUserAgentMiddleware': 401,
-}
+#DOWNLOADER_MIDDLEWARES = {
+#     'scrapy.downloadermiddlewares.useragent.UserAgentMiddleware': None,
+#    # -1 Retry means low priority middleware and retry after scraper is done
+#    # 'scrapy.downloadermiddlewares.retry.RetryMiddleware': -1,
+#     'scrapy_fake_useragent.middleware.RandomUserAgentMiddleware': 400,
+#     'scrapy_fake_useragent.middleware.RetryUserAgentMiddleware': 401,
+#}
 
 RETRY_HTTP_CODES = [500, 502, 521, 503, 504, 522, 524, 408, 400, 429]
 
-FAKEUSERAGENT_PROVIDERS = [
-    # this is the first provider we'll try
-    'scrapy_fake_useragent.providers.FakeUserAgentProvider',
-    # if FakeUserAgentProvider fails, we'll use faker to generate a user-agent string for us
-    'scrapy_fake_useragent.providers.FakerProvider',
-    # fall back to USER_AGENT value
-    'scrapy_fake_useragent.providers.FixedUserAgentProvider',
-]
+#FAKEUSERAGENT_PROVIDERS = [
+#    # this is the first provider we'll try
+#    'scrapy_fake_useragent.providers.FakeUserAgentProvider',
+#    # if FakeUserAgentProvider fails, we'll use faker to generate a user-agent string for us
+#    'scrapy_fake_useragent.providers.FakerProvider',
+#    # fall back to USER_AGENT value
+#    'scrapy_fake_useragent.providers.FixedUserAgentProvider',
+#]
 
 USER_AGENT = 'Mozilla/5.0 (Linux; Android 6.0; Nexus 5 Build/MRA58N) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/103.0.0.0 Mobile Safari/537.36'
 # Obey robots.txt rules
@@ -68,9 +68,9 @@ DEFAULT_REQUEST_HEADERS = {
     'referer': ' https://www.superherodb.com/'
 }
 
-#DOWNLOADER_MIDDLEWARES = {
-#    'superheroes_test.middlewares.CustomRetryMiddleware': 120
-#}
+DOWNLOADER_MIDDLEWARES = {
+    'superheroes_test.middlewares.CustomRetryMiddleware': 120
+}
 
 
 # Enable or disable spider middlewares

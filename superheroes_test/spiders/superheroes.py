@@ -4,12 +4,6 @@ from itemloaders import ItemLoader
 import re
 from ..items import CharacterItem
 
-headers = {
-    'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
-    'Accept-Language': 'en',
-    'user-agent': ' Mozilla/5.0 (Linux; Android 6.0; Nexus 5 Build/MRA58N) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/104.0.0.0 Mobile Safari/537.36'
-}
-
 
 class SuperheroSpider(scrapy.Spider):
     name = 'superhero'
@@ -17,15 +11,7 @@ class SuperheroSpider(scrapy.Spider):
     #allowed_domains = ["superherodb.com"]
     # generate URLs for all pages
     start_urls = [
-        f"https://www.superherodb.com/characters/?page_nr={i}" for i in range(1, 141)]
-
-
-
-
-
-    def start_request(self, response):
-        for url in self.start_urls:
-            yield scrapy.Request(url, callback=self.parse, headers=headers)
+        f"https://www.superherodb.com/characters/?page_nr={i}" for i in range(1, 151)]
 
     def parse(self, response):
 
@@ -35,6 +21,7 @@ class SuperheroSpider(scrapy.Spider):
             loader = ItemLoader(item=CharacterItem())
 
             Character = card.css('a::text').get(default="")
+            
             Name = card.css(
                 'a>span[class = "suffix level-1"]::text').get(default="")
             Universe = card.css(
@@ -49,7 +36,7 @@ class SuperheroSpider(scrapy.Spider):
             url = "https://www.superherodb.com" + \
                 card.css('a::attr(href)').get()
 
-            yield scrapy.Request(url, callback=self.parse_info, meta={"item": loader.load_item()}, dont_filter=True, headers=headers)
+            yield scrapy.Request(url, callback=self.parse_info, meta={"item": loader.load_item()})
 
     def parse_info(self, response):
         try:
@@ -84,7 +71,7 @@ class SuperheroSpider(scrapy.Spider):
 
             Class_value = stats_json[0]["shdbclass"]['value']
 
-            try:  # Sometimes i"evel stat is missing
+            try:  
 
                 Level = stats_json[0]["shdbclass"]['level']
 
@@ -99,7 +86,7 @@ class SuperheroSpider(scrapy.Spider):
 
             # If default stats don't exist, parse user-given stats instead
 
-        if Strength and Speed and Strength and Durability and Intelligence and Power and Combat and Tier == 0: #If official entries don't exist, check for unofficial user entries
+        if all([0== i for i in [Strength, Speed, Strength, Durability, Intelligence, Power, Combat, Tier]]): #If official entries don't exist, check for unofficial user entries
 
             IQ = stats_json[1]["stats"]['int']
 
@@ -141,7 +128,7 @@ class SuperheroSpider(scrapy.Spider):
 
         # If official or user-given stats are available, parse additional character info
 
-        if Strength and Speed and Strength and Durability and Intelligence and Power and Combat and Tier != 0:
+        if any([0!= i for i in [Strength, Speed, Strength, Durability, Intelligence, Power, Combat, Tier]]):
 
             Full_name = response.xpath(
                 '//td[contains(text(), "Full name")]/following-sibling::td/text()').get(default="None")
@@ -281,7 +268,7 @@ class SuperheroSpider(scrapy.Spider):
 
             equipment_url = response.url + "equipment/"
 
-            yield response.follow(equipment_url, callback=self.parse_equipment, meta={"item": loader.load_item()}, headers=headers)
+            yield response.follow(equipment_url, callback=self.parse_equipment, meta={"item": loader.load_item()})
 
         # Do not parse additional info if there are no user stats
         else:

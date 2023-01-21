@@ -17,7 +17,7 @@ from scrapy.utils.response import response_status_message
 #Selenium request will be made if scrapy request fails for retries
 class CustomRetryMiddleware(RetryMiddleware):
 
-    path = "G:/Downloads/chromedriver.exe"
+    path = r"C:\Users\Baraa\Documents\Python\Chrome_webriver\chromedriver.exe"
     options = uc.ChromeOptions()
     options.headless = True
     chrome_prefs = {}
