@@ -1,8 +1,10 @@
+from urllib.parse import urljoin
 import scrapy
 import json
 from itemloaders import ItemLoader
 import re
 from ..items import CharacterItem
+import pandas as pd
 
 
 class SuperheroSpider(scrapy.Spider):
@@ -33,11 +35,10 @@ class SuperheroSpider(scrapy.Spider):
                 'Name', Name)
             loader.add_value(
                 'Universe', Universe)
-            url = "https://www.superherodb.com" + \
-                card.css('a::attr(href)').get()
-
-            yield scrapy.Request(url, callback=self.parse_info, meta={"item": loader.load_item()})
-
+            
+            url = urljoin(response.url, card.css('a::attr(href)').get())       
+        
+            
     def parse_info(self, response):
         try:
             stats_json = [json.loads(x) for x in re.findall(
@@ -267,6 +268,11 @@ class SuperheroSpider(scrapy.Spider):
             loader.add_value('Super_powers', Super_powers)
 
             equipment_url = response.url + "equipment/"
+            
+            history_url = urljoin(response.url, "history/")
+            
+            
+            yield response.follow(history_url, callback = self.parse_history,  meta={"item": loader.load_item()})
 
             yield response.follow(equipment_url, callback=self.parse_equipment, meta={"item": loader.load_item()})
 
@@ -274,6 +280,19 @@ class SuperheroSpider(scrapy.Spider):
         else:
             return
 
+    def parse_history(self, response):
+        
+        loader = ItemLoader(response.meta['item'], response=response)
+        
+        history_text =  response.css('div[class="column col-12 text-columns-2"]::text').getall()
+        
+        if history_text:
+            
+            history = ' '.join(history_text)
+            
+            loader.add_value('History', history.strip())
+            
+    
     def parse_equipment(self, response):
 
         loader = ItemLoader(response.meta['item'], response=response)

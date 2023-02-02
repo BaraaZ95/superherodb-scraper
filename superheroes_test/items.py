@@ -12,6 +12,7 @@ class CharacterItem(scrapy.Item):
 
     Character = Field(output_processor=TakeFirst())
     Name = Field(output_processor=TakeFirst())
+    History = Field(output_processor=TakeFirst())
     Full_name = Field(output_processor=TakeFirst())
     Universe = Field(output_processor=TakeFirst())
     Creator = Field(output_processor=TakeFirst())
